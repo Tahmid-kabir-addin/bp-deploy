@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "bc8f637c13ab9a397cd6d4f30ae3219f"
+name = "bulk-price"
+handle = "bulk-price"
+application_url = "https://harris-bought-hygiene-ultimately.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "test-infancy.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://harris-bought-hygiene-ultimately.trycloudflare.com/auth/callback",
+  "https://harris-bought-hygiene-ultimately.trycloudflare.com/auth/shopify/callback",
+  "https://harris-bought-hygiene-ultimately.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false

@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id          String    @id
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      BigInt?
+}
+
+// price model for the product. fields are productId (foreign key), default price, current price, id should be uuid
+model Price {
+  id           String    @id @default(uuid())
+  productId    String
+  defaultPrice Float     @default(0)
+  currentPrice Float     @default(0)
+  Product      Product[]
+}
+
+// compareAtPrice model for the product. fields are productId (foreign key), default compareAt price, current compareAt price, id should be uuid
+model CompareAtPrice {
+  id           String    @id @default(uuid())
+  productId    String
+  defaultPrice Float     @default(0)
+  currentPrice Float     @default(0)
+  Product      Product[]
+}
+
+// costPrice model for the product. fields are productId (foreign key), default cost price, current cost price, id should be uuid
+model CostPrice {
+  id           String    @id @default(uuid())
+  productId    String
+  defaultPrice Float     @default(0)
+  currentPrice Float     @default(0)
+  Product      Product[]
+}
+
+// taskApplication model. fields are id, Collections [array of collection ids], Products [array of product ids], sales [array of sales ids]
+
+model TaskApplication {
+  id          String       @id @default(uuid())
+  Collections Collection[]
+  Products    Product[]
+  Sales       Sales[]
+  taskId      String
+  Task        Task[]
+}
+
+model Collection {
+  id                String           @id @default(uuid())
+  TaskApplication   TaskApplication? @relation(fields: [taskApplicationId], references: [id])
+  taskApplicationId String?
+}
+
+// product model. fields are 
+// - 
+//     - id
+//     - storeId  
+//     - Price (foreign key not an array)
+//     - CompareAtPrice (foreign key not an array)
+//     - costPrice  (foreign key not an array)
+//     - taskId (foreign key not an array)
+model Product {
+  id                String           @id @default(uuid())
+  TaskApplication   TaskApplication? @relation(fields: [taskApplicationId], references: [id])
+  taskApplicationId String?
+  storeId           String
+  Price             Price?           @relation(fields: [priceId], references: [id])
+  priceId           String?
+  CompareAtPrice    CompareAtPrice?  @relation(fields: [compareAtPriceId], references: [id])
+  compareAtPriceId  String?
+  costPrice         CostPrice?       @relation(fields: [costPriceId], references: [id])
+  costPriceId       String?
+  taskId            String
+  Task              Task[]
+}
+
+// Task model. fields are id, storeId, createdAt, taskApplicationId (foreign key not an array),status (enum: completed, archived and cancelled), - PriceIncrement (float)
+// - PriceDecrement (float)
+// - ComparePriceIncrement (float)
+// - ComparePriceDecrement (float)
+// - CostIncrement (float)
+// - CostDecrement (float)
+
+model Task {
+  id                    String           @id @default(uuid())
+  storeId               String
+  createdAt             DateTime         @default(now())
+  taskApplication       TaskApplication? @relation(fields: [taskApplicationId], references: [id])
+  taskApplicationId     String
+  status                String
+  PriceIncrement        Float            @default(0)
+  PriceDecrement        Float            @default(0)
+  ComparePriceIncrement Float            @default(0)
+  ComparePriceDecrement Float            @default(0)
+  CostIncrement         Float            @default(0)
+  CostDecrement         Float            @default(0)
+  Product               Product?         @relation(fields: [productId], references: [id])
+  productId             String?
+}
+
+model Sales {
+  id                    String           @id @default(uuid())
+  taskApplicationId     String?
+  storeId               String
+  createdAt             DateTime         @default(now())
+  taskApplication       TaskApplication? @relation(fields: [taskApplicationId], references: [id])
+  status                String
+  PriceIncrement        Float            @default(0)
+  PriceDecrement        Float            @default(0)
+  ComparePriceIncrement Float            @default(0)
+  ComparePriceDecrement Float            @default(0)
+  CostIncrement         Float            @default(0)
+  CostDecrement         Float            @default(0)
+}
